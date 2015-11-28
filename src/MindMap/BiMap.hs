@@ -12,6 +12,22 @@ instance (Monoid a, Monoid b, Ord a, Ord b) => Monoid (Bimap a b) where
   mempty = empty
   mappend = union
 
+class Bifunctor p where
+  bimap :: (a -> b) -> (c -> d) -> p a c -> p b d
+  bimap f g = second g . first f
+  
+  first :: (a -> b) -> p a x -> p b x
+  first f = bimap f id
+  
+  second :: (c -> d) -> p y c -> p y d
+  second = bimap id
+
+-- instance Bifunctor Bimap where
+--   first f (MkBimap l r) = MkBimap (M.map f l) r
+
+
+
+
 union :: (Ord a, Ord b) => Bimap a b -> Bimap a b -> Bimap a b
 union (MkBimap l r) (MkBimap l1 r1) = MkBimap (M.union l l1) (M.union r r1)
 
