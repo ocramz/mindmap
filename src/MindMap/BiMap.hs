@@ -1,12 +1,21 @@
 module MindMap.BiMap where
 
 import qualified Data.Map.Strict as M
-
+import Data.Monoid
 
 data Bimap a b = MkBimap !(M.Map a b) !(M.Map b a)
 
 instance (Show a, Show b) => Show (Bimap a b) where
-  show (MkBimap x y) = show $ "BiMap " ++ show (x, y)
+  show (MkBimap x y) = show $ "BiMap " ++ show x
+
+instance (Monoid a, Monoid b, Ord a, Ord b) => Monoid (Bimap a b) where
+  mempty = empty
+  mappend = union
+
+union :: (Ord a, Ord b) => Bimap a b -> Bimap a b -> Bimap a b
+union (MkBimap l r) (MkBimap l1 r1) = MkBimap (M.union l l1) (M.union r r1)
+
+empty = MkBimap M.empty M.empty
 
 singleton :: a -> b -> Bimap a b
 singleton k v = MkBimap (M.singleton k v) (M.singleton v k)
